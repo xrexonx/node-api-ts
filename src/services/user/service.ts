@@ -1,6 +1,21 @@
-
 import { Request, Response } from "express";
-import { UserRepository } from "../repository/userRepository";
+import { UserRepository } from "./repository";
+
+
+export interface UserRequest {
+    id: number;
+    username: string;
+    password: string;
+    type: string;
+    validate(): void;
+}
+
+export interface UserResponse {
+    id: number;
+    username: string;
+    type: string;
+}
+
 
 const userService = (userRepo: UserRepository) => ({
     create: async (req: Request, res: Response) => {

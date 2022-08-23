@@ -1,8 +1,8 @@
-import { Router } from 'express'
-import userService from "../services/userService";
-import userRepository from "../repository/userRepository";
+import { Router } from "express";
+import userService from "./service";
+import userRepository from "./repository";
+import { db } from "../../config/db";
 
-import { db } from '../config/db';
 
 const userRoutes: Router = Router()
 

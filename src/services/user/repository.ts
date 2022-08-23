@@ -1,6 +1,7 @@
-import { User} from "../entity/User";
 import { DataSource } from "typeorm";
-import { UserResponse } from "../dto/userResponse";
+import { User } from "./entity";
+import { UserResponse } from "./service";
+
 
 export interface UserRepository {
     create(user: User): Promise<UserResponse>
