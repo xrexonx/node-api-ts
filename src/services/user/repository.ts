@@ -22,7 +22,6 @@ const userRepository = (db: DataSource) => ({
             await db.manager.save(user);
             userResponse.id = user.id;
             userResponse.username = user.username;
-            userResponse.type = user.type;
             return userResponse;
         } catch (e: any) {
             console.log(e);

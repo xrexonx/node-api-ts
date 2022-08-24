@@ -1,8 +1,6 @@
-/*
- * Databse instance wrapped by typeorm
- */
+
 import { DataSource } from 'typeorm';
-import { User } from '../entity/User';
+import { User } from "../services/user/entity";
 
 export const db = new DataSource({
 	type: 'mysql',
