@@ -3,25 +3,23 @@ import {
     Entity,
     PrimaryGeneratedColumn,
     Column,
-    BaseEntity,
     CreateDateColumn,
-    UpdateDateColumn, OneToMany
+    UpdateDateColumn, OneToMany, JoinTable
 } from 'typeorm'
 
 import { Address } from "../address/entity"
 import { Contact } from "../contact/entity"
 
 
+const oneToManyOptions = {
+    eager: true
+}
+
+
 @Entity()
-export class User extends BaseEntity {
+export class User {
     @PrimaryGeneratedColumn()
     id: number
-
-    @Column()
-    username: string
-
-    @Column()
-    password: string
 
     @Column()
     fullName: string
@@ -29,10 +27,14 @@ export class User extends BaseEntity {
     @Column()
     email: string
 
-    @OneToMany(_ => Address, address => address.user)
+    @OneToMany(_ =>
+        Address, address => address.user, oneToManyOptions)
+    @JoinTable()
     addresses: Address[]
 
-    @OneToMany(_ => Contact, contact => contact.user)
+    @OneToMany(_ =>
+        Contact, contact => contact.user, oneToManyOptions)
+    @JoinTable()
     contacts: Contact[]
 
     @Column('boolean', {default: true})

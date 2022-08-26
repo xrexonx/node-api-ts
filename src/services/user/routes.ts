@@ -1,17 +1,18 @@
 import { Router } from "express";
 import userService from "./service";
 import userRepository from "./repository";
-import { db } from "../../config/db";
+import { database } from "../../config/database";
+
+const users: Router = Router()
+
+const repository = userRepository(database)
+const user = userService(repository)
+
+users.post('/users', user.create)
+users.put('/users', user.update)
+users.get('/users', user.getAll)
+users.get('/users/:id', user.get)
+users.delete('/users/:id', user.delete)
 
 
-const userRoutes: Router = Router()
-
-const user = userService(userRepository(db))
-
-userRoutes.post('/user', user.create)
-userRoutes.get('/user', user.get)
-userRoutes.put('/user', user.update)
-userRoutes.delete('/user', user.delete)
-
-
-export default userRoutes
+export default users

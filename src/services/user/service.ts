@@ -1,56 +1,81 @@
 import { Request, Response } from "express";
 import { UserRepository } from "./repository";
-
-
-export interface UserRequest {
-    id: number;
-    username: string;
-    password: string;
-    type: string;
-    validate(): void;
-}
-
-export interface UserResponse {
-    id: number;
-    username: string;
-    type: string;
-}
+import { User } from "./entity";
+import {buildResponse, JSONResponse} from "../../util/reponse";
 
 
 const userService = (userRepo: UserRepository) => ({
     create: async (req: Request, res: Response) => {
         try {
-            const userRequest: any = {}
-            userRequest.username = req.body.username;
-            userRequest.password = req.body.password;
+            const {
+                email,
+                fullName,
+                addresses,
+                contacts
+            } = req.body
 
-            const user = await userRepo.create(userRequest);
+            const newUser = new User()
+
+            newUser.email = email
+            newUser.fullName = fullName
+            newUser.addresses = addresses || []
+            newUser.contacts = contacts || []
+
+            const user = await userRepo.create(newUser);
+            return res.status(201).json(user);
+
+        } catch (e: any) {
+            res.status(e.code).json(e.message);
+        }
+    },
+    getAll: async (req: Request, res: Response) => {
+        try {
+            return res.status(200).json(await userRepo.getAll());
+        } catch (e: any) {
+            res.status(e.code).json(e.message);
+        }
+    },
+    get: async (req: Request, res: Response) => {
+        try {
+            const { id } = req.params;
+            const user = await userRepo.get(parseInt(id));
+            // const jResponse: JSONResponse<User> = buildResponse(user, 'users')
             return res.status(200).json(user);
         } catch (e: any) {
             res.status(e.code).json(e.message);
         }
     },
-    update: async (req: any, res: Response) => {
+    update: async (req: Request, res: Response) => {
         try {
-            const userRequest: any = {}
-            userRequest.id = req.user.id;
+            const {
+                id,
+                email,
+                fullName,
+                addresses,
+                contacts
+            } = req.body
 
-            const user = await userRepo.update(userRequest);
-            return res.status(200).json(user);
+            const newUser = new User()
+
+            newUser.id = id
+            newUser.email = email
+            newUser.fullName = fullName
+            newUser.addresses = addresses || []
+            newUser.contacts = contacts || []
+
+            const updatedUser = await userRepo.update(newUser);
+            return res.status(200).json(updatedUser);
+
         } catch (e: any) {
             res.status(e.code).json(e.message);
         }
     },
-    get: async (req: any, res: Response) => {
+
+    delete: async (req: Request, res: Response) => {
         try {
-            return res.status(200).json({});
-        } catch (e: any) {
-            res.status(e.code).json(e.message);
-        }
-    },
-    delete: async (req: any, res: Response) => {
-        try {
-            return res.status(200).json({});
+            const { id } = req.params;
+            const deletedId = userRepo.delete(id)
+            return res.status(200).json({deletedId});
         } catch (e: any) {
             res.status(e.code).json(e.message);
         }
