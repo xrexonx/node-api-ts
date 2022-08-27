@@ -35,7 +35,7 @@ yarn build
 ### Run the app:
 
 ```bash
-npm run start
+yarn start
 ```
 
 ### Todo
