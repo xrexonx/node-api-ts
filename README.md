@@ -17,10 +17,10 @@ Assuming you already have installed the NodeJS and all the required dependency
 git clone https://gitlab.com/xrexonx/node-api-ts.git && cd node-api-ts
 ```
 
-2 Create `.env` file - Modify `.env` file with your correct database credentials and desired Port
+2 Create `.env` file and copy .env sample
 
 ```bash
-touch .env && cp .env-sample .env
+touch .env && cp .env-sample .env # Modify .env file with your correct database credentials and desired Port
 ```
 
 3. Install dependencies
