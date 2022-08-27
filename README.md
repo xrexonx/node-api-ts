@@ -14,7 +14,7 @@ Assuming you already have installed the NodeJS and all the required dependency
 
 1. Clone the repo
 ```bash
-git clone https://gitlab.com/xrexonx/node-api-ts.git && cd node-api-ts
+git clone https://gitlab.com/xrexonx/api-ts.git && cd api-ts
 ```
 
 2 Create `.env` file and copy .env sample
