@@ -2,11 +2,11 @@
   "name": "node-api-ts",
   "version": "1.0.0",
   "description": "",
-  "main": "./bin/src/server.js",
+  "main": "./bin/src/index.js",
   "scripts": {
     "build": "npx tsc",
-    "start": "node ./bin/src/server.js",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q ./bin/src/server.js\"",
+    "start": "node ./bin/src/index.js",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q ./bin/src/index.js\"",
     "test": "rm -rf ./coverage && jest"
   },
   "repository": {
@@ -17,12 +17,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/supertest": "^2.0.12",
     "body-parser": "^1.20.0",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
+    "http": "^0.0.1-security",
     "mysql": "^2.18.1",
     "reflect-metadata": "^0.1.13",
-    "typeorm": "^0.3.7"
+    "sql.js": "^1.7.0",
+    "supertest": "^6.2.4",
+    "typeorm": "^0.3.7",
+    "winston": "^3.8.1"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.18.9",

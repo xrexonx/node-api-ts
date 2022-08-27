@@ -6,6 +6,7 @@ dotenv.config();
 export const apiHost = process.env.API_HOST
 export const apiPort = process.env.API_PORT
 export const apiVersion = process.env.API_VERSION
+export const apiEnv = process.env.API_ENV
 
 
 // Database configs

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import {Request, response, Response} from "express";
 import { UserRepository } from "./repository";
 import { User } from "./entity";
 import {buildResponse, JSONResponse} from "../../util/reponse";
@@ -16,14 +16,19 @@ const userService = (userRepo: UserRepository) => ({
 
             const newUser = new User()
 
-            newUser.email = email
-            newUser.fullName = fullName
-            newUser.addresses = addresses || []
-            newUser.contacts = contacts || []
+            // TODO: Handle proper input validation
+            if (fullName) {
+                newUser.email = email
+                newUser.fullName = fullName
+                newUser.addresses = addresses || []
+                newUser.contacts = contacts || []
 
-            const user = await userRepo.create(newUser);
-            const response: JSONResponse = buildResponse<User>(user, 'users')
-            return res.status(201).json(response);
+                const user = await userRepo.create(newUser);
+                const response: JSONResponse = buildResponse<User>(user, 'users')
+                return res.status(201).json(response);
+            } else {
+                return res.status(400).json({message: 'Missing fields'});
+            }
 
         } catch (e: any) {
             res.status(e.code).json(e.message);
@@ -83,7 +88,7 @@ const userService = (userRepo: UserRepository) => ({
         try {
             const { id } = req.params;
             const deletedId = userRepo.delete(id)
-            return res.status(200).json({deletedId});
+            return res.status(204).json({deletedId});
         } catch (e: any) {
             res.status(e.code).json(e.message);
         }
