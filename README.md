@@ -1,4 +1,4 @@
-# API-TS
+# Node-api-ts
 Simple NodeJS Rest API written in Typescript
 
 ## Requirements
