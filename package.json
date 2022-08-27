@@ -1,5 +1,5 @@
 {
-  "name": "api-ts",
+  "name": "node-api-ts",
   "version": "1.0.0",
   "description": "",
   "main": "./bin/src/server.js",
