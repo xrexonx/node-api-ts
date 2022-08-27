@@ -3,34 +3,44 @@ import {
     apiVersion
 } from "../config/environments";
 
-interface Data<T> {
+interface Data {
     type: string
     id: string
-    attributes: T
+    attributes: any
     relationships: any
     links: any
-
 }
 
-export interface JSONResponse<T> {
+export interface JSONResponse {
     links: any
-    data: Data<T>
+    data: Data[]
+    included: any
 }
 
+function buildResponseData<T>(responseData: T, type: string): Data[] {
 
-
-export function buildResponse(data: any, type: string) {
-    return {
-        links: {},
-        data: {
+    const buildData = (res: T | any) => {
+        return {
             type: type,
-            id: data.id,
-            attributes: data,
+            id: res.id,
+            attributes: res,
             links: {
-                self: `${apiHost}/api/${apiVersion}/${type}/${data.id}`
-            }
-        },
-        relationships: {}
+                self: `${apiHost}/api/${apiVersion}/${type}/${res.id}`
+            },
+            relationships: {} // TODO: append data associations here
+        }
     }
 
+    return Array.isArray(responseData)
+        ? responseData.map(each => buildData(each))
+        : [buildData(responseData)]
+
+}
+
+export function buildResponse<T>(data: T, type: string) {
+    return {
+        links: {},
+        data: buildResponseData<T>(data, type),
+        included: {}
+    }
 }

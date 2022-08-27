@@ -22,7 +22,8 @@ const userService = (userRepo: UserRepository) => ({
             newUser.contacts = contacts || []
 
             const user = await userRepo.create(newUser);
-            return res.status(201).json(user);
+            const response: JSONResponse = buildResponse<User>(user, 'users')
+            return res.status(201).json(response);
 
         } catch (e: any) {
             res.status(e.code).json(e.message);
@@ -30,7 +31,8 @@ const userService = (userRepo: UserRepository) => ({
     },
     getAll: async (req: Request, res: Response) => {
         try {
-            return res.status(200).json(await userRepo.getAll());
+            const response: JSONResponse = buildResponse<User[]>(await userRepo.getAll(), 'users')
+            return res.status(200).json(response);
         } catch (e: any) {
             res.status(e.code).json(e.message);
         }
@@ -39,8 +41,13 @@ const userService = (userRepo: UserRepository) => ({
         try {
             const { id } = req.params;
             const user = await userRepo.get(parseInt(id));
-            // const jResponse: JSONResponse<User> = buildResponse(user, 'users')
-            return res.status(200).json(user);
+
+            const response = res.status(200)
+
+            return user.id
+            ? response.json(buildResponse<User>(user, 'users'))
+            : response.json({message: 'No user found'});
+
         } catch (e: any) {
             res.status(e.code).json(e.message);
         }
@@ -55,16 +62,17 @@ const userService = (userRepo: UserRepository) => ({
                 contacts
             } = req.body
 
-            const newUser = new User()
+            const user = new User()
 
-            newUser.id = id
-            newUser.email = email
-            newUser.fullName = fullName
-            newUser.addresses = addresses || []
-            newUser.contacts = contacts || []
+            user.id = id
+            user.email = email
+            user.fullName = fullName
+            user.addresses = addresses || []
+            user.contacts = contacts || []
 
-            const updatedUser = await userRepo.update(newUser);
-            return res.status(200).json(updatedUser);
+            const updatedUser = await userRepo.update(user);
+            const response: JSONResponse = buildResponse<User>(updatedUser, 'users')
+            return res.status(200).json(response);
 
         } catch (e: any) {
             res.status(e.code).json(e.message);

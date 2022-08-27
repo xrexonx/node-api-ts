@@ -58,8 +58,6 @@ const userRepository = (db: DataSource) => ({
     get: async (id: number) => {
 
         const response = new User()
-        console.log({response});
-
         try {
             const user = await db.getRepository(User).findOneBy({ id: id })
             if (user) {
@@ -78,9 +76,7 @@ const userRepository = (db: DataSource) => ({
     update: async (user: User) => {
         try {
             const repo = db.getRepository(User);
-            const result = await repo.findOneBy({
-                id: user.id,
-            });
+            const result = await repo.findOneBy({id: user.id});
 
             // Save user contacts
             if (user.contacts.length > 0) {

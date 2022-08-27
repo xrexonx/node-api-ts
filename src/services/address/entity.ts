@@ -23,7 +23,9 @@ export class Address extends BaseEntity {
     @Column()
     userId: number;
 
-    @ManyToOne(_ => User,user => user.addresses)
+    @ManyToOne(_ => User,user => user.addresses, {
+        onDelete: "CASCADE"
+    })
     @JoinColumn({ name: "userId" })
     user: User;
 
