@@ -14,15 +14,22 @@ Assuming you already have installed the NodeJS and all the required dependency
 
 1. Clone the repo
 ```bash
-git clone https://github.com/xrexonx/api-ts.git && cd api-ts
+git clone https://gitlab.com/xrexonx/node-api-ts.git && cd node-api-ts
 ```
-2. Install dependencies
+
+2 Create `.env` file - Modify `.env` file with your correct database credentials and desired Port
+
 ```bash
-npm install
+touch .env && cp .env-sample .env
 ```
-3. Build the app
+
+3. Install dependencies
 ```bash
-npm run build
+yarn install
+```
+4. Build the app
+```bash
+yarn build
 ```
 
 ### Run the app:
@@ -30,3 +37,6 @@ npm run build
 ```bash
 npm run start
 ```
+
+### Todo
+Add unit test
