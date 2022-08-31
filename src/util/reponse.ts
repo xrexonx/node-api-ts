@@ -37,7 +37,7 @@ function buildResponseData<T>(responseData: T, type: string): Data[] {
 
 }
 
-export function buildResponse<T>(data: T, type: string) {
+export function formatResponse<T>(data: T, type: string) {
     return {
         links: {},
         data: buildResponseData<T>(data, type),

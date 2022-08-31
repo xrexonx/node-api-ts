@@ -1,8 +1,14 @@
-import {Request, response, Response} from "express";
+import { Request, Response } from "express";
 import { UserRepository } from "./repository";
 import { User } from "./entity";
-import {buildResponse, JSONResponse} from "../../util/reponse";
+import { formatResponse, JSONResponse } from "../../util/reponse";
 
+function createResponse<T>(res: Response, userResponse: GenericResponse<T>) {
+    const response = res.status(userResponse.code)
+    return userResponse.code === 200
+        ? response.json(formatResponse<T>(userResponse.data, 'users') as JSONResponse)
+        : response.json({message: userResponse.message});
+}
 
 const userService = (userRepo: UserRepository) => ({
     create: async (req: Request, res: Response) => {
@@ -22,10 +28,7 @@ const userService = (userRepo: UserRepository) => ({
                 newUser.fullName = fullName
                 newUser.addresses = addresses || []
                 newUser.contacts = contacts || []
-
-                const user = await userRepo.create(newUser);
-                const response: JSONResponse = buildResponse<User>(user, 'users')
-                return res.status(201).json(response);
+                return createResponse<User>(res, await userRepo.create(newUser))
             } else {
                 return res.status(400).json({message: 'Missing fields'});
             }
@@ -36,8 +39,7 @@ const userService = (userRepo: UserRepository) => ({
     },
     getAll: async (req: Request, res: Response) => {
         try {
-            const response: JSONResponse = buildResponse<User[]>(await userRepo.getAll(), 'users')
-            return res.status(200).json(response);
+            return createResponse<User[]>(res, await userRepo.getAll())
         } catch (e: any) {
             res.status(e.code).json(e.message);
         }
@@ -45,13 +47,11 @@ const userService = (userRepo: UserRepository) => ({
     get: async (req: Request, res: Response) => {
         try {
             const { id } = req.params;
-            const user = await userRepo.get(parseInt(id));
+            const userResponse = await userRepo.get(parseInt(id));
 
-            const response = res.status(200)
-
-            return user.id
-            ? response.json(buildResponse<User>(user, 'users'))
-            : response.json({message: 'No user found'});
+            return userResponse.data.id
+                ? createResponse<User>(res, userResponse)
+                : res.status(200).json({message: 'No user found'});
 
         } catch (e: any) {
             res.status(e.code).json(e.message);
@@ -75,9 +75,7 @@ const userService = (userRepo: UserRepository) => ({
             user.addresses = addresses || []
             user.contacts = contacts || []
 
-            const updatedUser = await userRepo.update(user);
-            const response: JSONResponse = buildResponse<User>(updatedUser, 'users')
-            return res.status(200).json(response);
+            return createResponse<User>(res, await userRepo.update(user))
 
         } catch (e: any) {
             res.status(e.code).json(e.message);

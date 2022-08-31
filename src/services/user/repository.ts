@@ -5,11 +5,15 @@ import { Address } from "../address/entity";
 import { logger } from "../../util/logger";
 
 export interface UserRepository {
-    get(id: number): Promise<User>
-    getAll(): Promise<User[]>
-    create(user: User): Promise<User>
-    update(user: User): Promise<User>
-    delete(id: string): Promise<string>
+    get(id: number): Promise<GenericResponse<User>>
+    getAll(): Promise<GenericResponse<User[]>>
+    create(user: User): Promise<GenericResponse<User>>
+    update(user: User): Promise<GenericResponse<User>>
+    delete(id: string): Promise<GenericResponse<string>>
+}
+
+function createResponse<T>(data: T, message: string, code: number): GenericResponse<T> {
+    return { data, message, code }
 }
 
 const userRepository = (db: DataSource) => ({
@@ -17,7 +21,7 @@ const userRepository = (db: DataSource) => ({
         try {
             const createdUser = await db.manager.save(user);
 
-            // Save user contacts
+            // Save user contacts - TODO: transfer to contact service
             if (user.contacts.length > 0) {
                 const contacts = user.contacts.map(contact => {
                     const newContact = new Contact()
@@ -29,7 +33,7 @@ const userRepository = (db: DataSource) => ({
                 await db.manager.save(contacts)
             }
 
-            // Save user addresses
+            // Save user addresses - TODO: transfer to address service
             if (user.addresses.length > 0) {
                 const addresses = user.addresses.map(address => {
                     const newAddress = new Address()
@@ -40,20 +44,22 @@ const userRepository = (db: DataSource) => ({
                 })
                 await db.manager.save(addresses)
             }
-
-            return createdUser
+            return createResponse<User>(createdUser, "Successfully created", 201)
         } catch (e: any) {
-            logger.error(`UserRepository:create error: ${(e as Error).message}`);
-            return new User();
+            const errMsg = `UserRepository:create error: ${(e as Error).message}`
+            logger.error(errMsg);
+            return createResponse<User>(new User(), errMsg, 500)
         }
     },
     getAll: async () => {
         try {
-            return await db.getRepository(User).find();
+            const users = await db.getRepository(User).find();
+            return createResponse<User[]>(users, "Successfully fetched users", 200)
         } catch (e: any) {
-            logger.error(`UserRepository:getAll error: ${(e as Error).message}`);
-            const result: User[] = [];
-            return result;
+            const users: User[] = [];
+            const errMsg = `UserRepository:create getAll: ${(e as Error).message}`
+            logger.error(errMsg);
+            return createResponse<User[]>(users, errMsg, 500)
         }
     },
     get: async (id: number) => {
@@ -68,10 +74,11 @@ const userRepository = (db: DataSource) => ({
                 response.contacts =  user.contacts
                 response.addresses =  user.addresses
             }
-            return response
+            return createResponse<User>(response, `Successfully fetched user id: ${response.id}`, 200)
         } catch (e: any) {
-            logger.error(`UserRepository:get error: ${(e as Error).message}`);
-            return response
+            const errMsg = `UserRepository:get error: ${(e as Error).message}`
+            logger.error(errMsg);
+            return createResponse<User>(response, errMsg, 500)
         }
     },
     update: async (user: User) => {
@@ -79,7 +86,7 @@ const userRepository = (db: DataSource) => ({
             const repo = db.getRepository(User);
             const result = await repo.findOneBy({id: user.id});
 
-            // Save user contacts
+            // Save user contacts - TODO: transfer to contact service
             if (user.contacts.length > 0) {
                 const contacts = user.contacts.map(contact => {
                     const newContact = new Contact()
@@ -92,7 +99,7 @@ const userRepository = (db: DataSource) => ({
                 await db.manager.save(contacts)
             }
 
-            // Save user contacts
+            // Save user addresses - TODO: transfer to address service
             if (user.addresses.length > 0) {
                 const addresses = user.addresses.map(address => {
                     const addr = new Address()
@@ -105,25 +112,29 @@ const userRepository = (db: DataSource) => ({
                 await db.manager.save(addresses)
             }
 
-            return result ? await repo.save(user) : new User()
+            const updatedUser = result ? await repo.save(user) : new User()
+            return createResponse<User>(updatedUser, "", 200)
 
         } catch (e: any) {
-            logger.error(`UserRepository:update error: ${(e as Error).message}`);
-            return new User();
+            const errMsg = `UserRepository:update error: ${(e as Error).message}`
+            logger.error(errMsg);
+            return createResponse<User>(new User(), errMsg, 500)
         }
     },
     delete: async (id: string) => {
         try {
             const repo = db.getRepository(User)
             const result = await repo.findOneBy({id: parseInt(id)});
+            let deletedId = ""
             if (result) {
                 await repo.delete(id)
-                return id
+                deletedId = id
             }
-            return ""
+            return createResponse<string>(deletedId, "", 200)
         } catch (e: any) {
-            logger.error(`UserRepository:delete error: ${(e as Error).message}`);
-            return "";
+            const errMsg = `UserRepository:delete error: ${(e as Error).message}`
+            logger.error(errMsg);
+            return createResponse<string>("", errMsg, 500)
         }
     },
 })
