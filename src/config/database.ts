@@ -23,4 +23,3 @@ export const database = new DataSource({
 	migrations: [],
 	subscribers: [],
 });
-database.initialize();

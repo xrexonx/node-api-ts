@@ -87,8 +87,11 @@ const userService = (userRepo: UserRepository) => ({
     delete: async (req: Request, res: Response) => {
         try {
             const { id } = req.params;
-            const deletedId = userRepo.delete(id)
-            return res.status(204).json({deletedId});
+            const deletedId = await userRepo.delete(id)
+            const response = res.status(200)
+            return !!deletedId
+                ? response.json({deletedId: deletedId})
+                : response.json({message: 'No user found'});
         } catch (e: any) {
             res.status(e.code).json(e.message);
         }

@@ -2,6 +2,7 @@ import { DataSource } from "typeorm";
 import { User } from "./entity";
 import { Contact } from "../contact/entity";
 import { Address } from "../address/entity";
+import { logger } from "../../util/logger";
 
 export interface UserRepository {
     get(id: number): Promise<User>
@@ -42,7 +43,7 @@ const userRepository = (db: DataSource) => ({
 
             return createdUser
         } catch (e: any) {
-            console.log('userRepository:create error:', (e as Error).message);
+            logger.error(`UserRepository:create error: ${(e as Error).message}`);
             return new User();
         }
     },
@@ -50,7 +51,7 @@ const userRepository = (db: DataSource) => ({
         try {
             return await db.getRepository(User).find();
         } catch (e: any) {
-            console.log('userRepository:get error:', (e as Error).message);
+            logger.error(`UserRepository:getAll error: ${(e as Error).message}`);
             const result: User[] = [];
             return result;
         }
@@ -69,7 +70,7 @@ const userRepository = (db: DataSource) => ({
             }
             return response
         } catch (e: any) {
-            console.log('userRepository:get error:', (e as Error).message);
+            logger.error(`UserRepository:get error: ${(e as Error).message}`);
             return response
         }
     },
@@ -107,16 +108,21 @@ const userRepository = (db: DataSource) => ({
             return result ? await repo.save(user) : new User()
 
         } catch (e: any) {
-            console.log('userRepository:update error:', (e as Error).message);
+            logger.error(`UserRepository:update error: ${(e as Error).message}`);
             return new User();
         }
     },
     delete: async (id: string) => {
         try {
-            await db.getRepository(User).delete(id)
-            return id
+            const repo = db.getRepository(User)
+            const result = await repo.findOneBy({id: parseInt(id)});
+            if (result) {
+                await repo.delete(id)
+                return id
+            }
+            return ""
         } catch (e: any) {
-            console.log('userRepository:delete error:', (e as Error).message);
+            logger.error(`UserRepository:delete error: ${(e as Error).message}`);
             return "";
         }
     },
