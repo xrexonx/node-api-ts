@@ -13,9 +13,9 @@ import { createConnection, ConnectionOptions, Connection } from 'typeorm';
 
 import express from 'express';
 import supertest from 'supertest';
-import AppServer from "../src/server";
-import { apiPort } from "../src/config/environments";
-import { logger } from "../src/util/logger";
+import AppServer from "../../src/server";
+import { apiPort } from "../../src/config/environments";
+import { logger } from "../../src/util/logger";
 
 /**
  * TestFactory

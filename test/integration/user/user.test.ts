@@ -1,9 +1,9 @@
 // import 'module-alias/register';
-import { User } from './entity';
-import {TestFactory} from "../../../test/factory";
+import { User } from '../../../src/services/user/entity';
+import { TestFactory } from "../factory";
 import DoneCallback = jest.DoneCallback;
 
-describe('User resource test suites', () => {
+describe.skip('User resource test suites', () => {
     // Create instances
     const factory: TestFactory = new TestFactory();
     const testUser: User = new User()
