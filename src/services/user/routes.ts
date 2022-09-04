@@ -12,6 +12,7 @@ users.post('/users', user.create)
 users.put('/users', user.update)
 users.get('/users', user.getAll)
 users.get('/users/:id', user.get)
+users.patch('/users/:id', user.updateStatus)
 users.delete('/users/:id', user.delete)
 
 

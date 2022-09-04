@@ -1,6 +1,6 @@
-import {User} from "../../../src/services/user/entity";
-import userService from "../../../src/services/user/service";
 import { Request, Response } from "express";
+import { User } from "../../../src/services/user/entity";
+import userService from "../../../src/services/user/service";
 
 
 describe('User Service', () => {
@@ -65,11 +65,16 @@ describe('User Service', () => {
         }
 
         userRepoMock = () => ({
-            get: (id: any) => Promise.resolve(getResponse),
+            get: (id: number) => Promise.resolve(getResponse),
             getAll: () => Promise.resolve(getAllResponse),
-            create: (data: any) => Promise.resolve(createResponse),
-            update: (data: any) => Promise.resolve(updateResponse),
-            delete: (id: any) => Promise.resolve(deleteResponse)
+            create: (data: User) => Promise.resolve(createResponse),
+            update: (data: User) => Promise.resolve(updateResponse),
+            delete: (id: number) => Promise.resolve(deleteResponse),
+            updateStatus: (id: number, status: boolean) => Promise.resolve({
+                data: request.body.id,
+                message: '',
+                code: 200
+            })
         })
     })
 
@@ -129,6 +134,14 @@ describe('User Service', () => {
             const userServ = userService(userRepoMock())
             const deleteResponse = await userServ.delete(request, response) as any
             expect(deleteResponse.deletedId.data).toEqual(request.body.id)
+        });
+    });
+
+    describe('when updating user status', () => {
+        it('should delete existing user', async () => {
+            const userServ = userService(userRepoMock())
+            const updateResponse = await userServ.updateStatus(request, response) as any
+            console.log({updateResponse});
         });
     });
 });

@@ -9,11 +9,18 @@ export interface UserRepository {
     getAll(): Promise<GenericResponse<User[]>>
     create(user: User): Promise<GenericResponse<User>>
     update(user: User): Promise<GenericResponse<User>>
-    delete(id: string): Promise<GenericResponse<string>>
+    delete(id: number): Promise<GenericResponse<string>>
+    updateStatus(id: number, status: boolean): Promise<GenericResponse<string>>
 }
 
 function createResponse<T>(data: T, message: string, code: number): GenericResponse<T> {
     return { data, message, code }
+}
+
+function errorResponse<T>(action: string, message: string, data: T) {
+    const errMsg = `UserRepository:${action} error: ${message}`
+    logger.error(errMsg);
+    return createResponse<T>(data, errMsg, 500)
 }
 
 const userRepository = (db: DataSource) => ({
@@ -46,9 +53,7 @@ const userRepository = (db: DataSource) => ({
             }
             return createResponse<User>(createdUser, "Successfully created", 201)
         } catch (e: any) {
-            const errMsg = `UserRepository:create error: ${(e as Error).message}`
-            logger.error(errMsg);
-            return createResponse<User>(new User(), errMsg, 500)
+            return errorResponse<User>('create', (e as Error).message, new User())
         }
     },
     getAll: async () => {
@@ -57,9 +62,7 @@ const userRepository = (db: DataSource) => ({
             return createResponse<User[]>(users, "Successfully fetched users", 200)
         } catch (e: any) {
             const users: User[] = [];
-            const errMsg = `UserRepository:create getAll: ${(e as Error).message}`
-            logger.error(errMsg);
-            return createResponse<User[]>(users, errMsg, 500)
+            return errorResponse<User[]>('getAll', (e as Error).message, users)
         }
     },
     get: async (id: number) => {
@@ -76,9 +79,7 @@ const userRepository = (db: DataSource) => ({
             }
             return createResponse<User>(response, `Successfully fetched user id: ${response.id}`, 200)
         } catch (e: any) {
-            const errMsg = `UserRepository:get error: ${(e as Error).message}`
-            logger.error(errMsg);
-            return createResponse<User>(response, errMsg, 500)
+            return errorResponse<User>('get', (e as Error).message, response)
         }
     },
     update: async (user: User) => {
@@ -116,25 +117,35 @@ const userRepository = (db: DataSource) => ({
             return createResponse<User>(updatedUser, "", 200)
 
         } catch (e: any) {
-            const errMsg = `UserRepository:update error: ${(e as Error).message}`
-            logger.error(errMsg);
-            return createResponse<User>(new User(), errMsg, 500)
+            return errorResponse<User>('update', (e as Error).message, new User())
         }
     },
-    delete: async (id: string) => {
+    delete: async (id: number) => {
         try {
             const repo = db.getRepository(User)
-            const result = await repo.findOneBy({id: parseInt(id)});
+            const result = await repo.findOneBy({ id });
             let deletedId = ""
             if (result) {
                 await repo.delete(id)
-                deletedId = id
+                deletedId = id.toString()
             }
             return createResponse<string>(deletedId, "", 200)
         } catch (e: any) {
-            const errMsg = `UserRepository:delete error: ${(e as Error).message}`
-            logger.error(errMsg);
-            return createResponse<string>("", errMsg, 500)
+            return errorResponse<string>('delete', (e as Error).message, '')
+        }
+    },
+    updateStatus: async (id: number, status: boolean) => {
+        try {
+            const repo = db.getRepository(User)
+            const user = await repo.findOneBy({ id });
+            let updatedId = ""
+            if (user) {
+                await repo.update(id,{ isActive: status });
+                updatedId = id.toString()
+            }
+            return createResponse<string>(updatedId, "Successfully updated status", 200)
+        } catch (e: any) {
+            return errorResponse<string>('updateStatus', (e as Error).message, '')
         }
     },
 })
