@@ -1,8 +1,9 @@
 import userRoutes from "./services/user/routes";
+import contactRoutes from "./services/contact/routes";
 
-/* Combined routes if multiple services */
-// const routes = {
-//     ...userRoutes
-// }
+const AppRoutes = [
+    userRoutes,
+    contactRoutes
+]
 
-export default userRoutes
+export default AppRoutes
